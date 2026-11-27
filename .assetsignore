@@ -18,3 +18,5 @@ node_modules
 wrangler.jsonc
 README.md
 deploy.sh
+links.txt
+build-links.py

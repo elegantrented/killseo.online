@@ -1,0 +1,10 @@
+# One link per line. Lines starting with # are ignored.
+#
+#   https://example.com
+#   https://example.com | Text people click on
+#
+# With no "| text", the link text is the domain (example.com).
+# All links are normal follow links (they pass ranking credit).
+# Save this file, then run ./deploy.sh
+
+http://www.fastapi.online | www.fastapi.online
