@@ -9,3 +9,12 @@
 # Google structured data. All links are follow links.
 
 http://www.leaseend.com | www.leaseend.com
+https://leasematurity.com | www.leasematurity.com
+https://www.driveway.com | www.driveway.com
+https://www.fidelity-funding.com | www.fidelity-funding.com
+https://quitalease.com | quitalease.com
+https://www.refijet.com | www.refijet.com
+https://businessloans.com | businessloans.com
+http://ondeck.com | ondeck.com
+https://www.lendio.com | www.lendio.com
+https://www.fuckyou.com | www.fuckoff.com
