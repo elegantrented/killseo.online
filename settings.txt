@@ -1,0 +1,28 @@
+# Site-wide settings. Format:   name: value
+# Every {name} in the templates/ files is replaced with its value here.
+# Values can use other tags, e.g. {year} or {site_name}.
+# Leave a value empty to drop the tag that uses it (verification codes, twitter).
+#
+# Built-in tags you don't set here:
+#   {site_url}  https://<domain>/        {today}  build date (YYYY-MM-DD)
+#   {year}      build year               {count}  number of lines in sites.txt
+# Per-site tags (inside {each site} ... {/each} blocks in templates):
+#   {url} {host} {domain} {text} {n} {comma}
+
+domain: killseo.online
+site_name: Kill SEO
+title: Kill SEO — Search Engine Optimization That Actually Ranks
+description: Kill SEO: straightforward search engine optimization, technical SEO and meta tag know-how. No fluff, just what ranks.
+keywords: SEO, search engine optimization, technical SEO, meta tags, on-page SEO, ranking, Google, Kill SEO
+author: Kill SEO
+heading: Kill SEO
+intro: Search engine optimization, straight to the point.
+footer: © {year} {site_name}
+published: 2026-11-27
+language: en-US
+og_locale: en_US
+theme_color: #ffffff
+twitter:
+google_verification:
+bing_verification:
+yandex_verification:

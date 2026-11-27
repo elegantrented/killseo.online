@@ -1,0 +1,5 @@
+/* SITE */
+Site: {site_name}
+URL: {site_url}
+Last update: {today}
+Standards: HTML5

@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="{language}" dir="ltr" prefix="og: https://ogp.me/ns#">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+
+<title>{title}</title>
+<meta name="description" content="{description}">
+<meta name="keywords" content="{keywords}">
+<meta name="author" content="{author}">
+<meta name="publisher" content="{site_name}">
+<meta name="application-name" content="{site_name}">
+
+<meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1">
+<meta name="googlebot" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1">
+<meta name="bingbot" content="index, follow">
+<link rel="canonical" href="{site_url}">
+<link rel="alternate" hreflang="{language}" href="{site_url}">
+<link rel="alternate" hreflang="x-default" href="{site_url}">
+<link rel="sitemap" type="application/xml" title="Sitemap" href="/sitemap.xml">
+{if google_verification}<meta name="google-site-verification" content="{google_verification}">
+{/if}{if bing_verification}<meta name="msvalidate.01" content="{bing_verification}">
+{/if}{if yandex_verification}<meta name="yandex-verification" content="{yandex_verification}">
+{/if}
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="{site_name}">
+<meta property="og:locale" content="{og_locale}">
+<meta property="og:url" content="{site_url}">
+<meta property="og:title" content="{title}">
+<meta property="og:description" content="{description}">
+<meta property="og:image" content="{site_url}og-image.png">
+<meta property="og:image:secure_url" content="{site_url}og-image.png">
+<meta property="og:image:type" content="image/png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="{site_name}">
+
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:url" content="{site_url}">
+<meta name="twitter:title" content="{title}">
+<meta name="twitter:description" content="{description}">
+<meta name="twitter:image" content="{site_url}og-image.png">
+<meta name="twitter:image:alt" content="{site_name}">
+{if twitter}<meta name="twitter:site" content="{twitter}">
+<meta name="twitter:creator" content="{twitter}">
+{/if}
+<link rel="icon" href="/favicon.ico" sizes="32x32">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<link rel="manifest" href="/site.webmanifest">
+<meta name="theme-color" content="{theme_color}">
+<meta name="color-scheme" content="light">
+<meta name="format-detection" content="telephone=no">
+<meta name="referrer" content="strict-origin-when-cross-origin">
+<link rel="author" href="/humans.txt" type="text/plain">
+
+{each site}<link rel="dns-prefetch" href="//{host}">
+{/each}
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "Organization",
+      "@id": "{site_url}#organization",
+      "name": "{site_name}",
+      "url": "{site_url}",
+      "logo": {
+        "@type": "ImageObject",
+        "url": "{site_url}apple-touch-icon.png",
+        "width": 180,
+        "height": 180
+      }
+    },
+    {
+      "@type": "WebSite",
+      "@id": "{site_url}#website",
+      "url": "{site_url}",
+      "name": "{site_name}",
+      "description": "{description}",
+      "inLanguage": "{language}",
+      "publisher": { "@id": "{site_url}#organization" }
+    },
+    {
+      "@type": "WebPage",
+      "@id": "{site_url}#webpage",
+      "url": "{site_url}",
+      "name": "{title}",
+      "description": "{description}",
+      "inLanguage": "{language}",
+      "isPartOf": { "@id": "{site_url}#website" },
+      "about": { "@id": "{site_url}#organization" },
+      "primaryImageOfPage": { "@type": "ImageObject", "url": "{site_url}og-image.png" },
+      "datePublished": "{published}",
+      "dateModified": "{today}",
+      "relatedLink": [{each site}
+        "{url}"{comma}{/each}
+      ],
+      "mainEntity": { "@id": "{site_url}#links" }
+    },
+    {
+      "@type": "ItemList",
+      "@id": "{site_url}#links",
+      "name": "{heading}",
+      "numberOfItems": {count},
+      "itemListElement": [{each site}
+        { "@type": "ListItem", "position": {n}, "name": "{text}", "url": "{url}" }{comma}{/each}
+      ]
+    }
+  ]
+}
+</script>
+</head>
+<body>
+
+<header>
+<h1>{heading}</h1>
+</header>
+
+<main>
+<p>{intro}</p>
+
+<ul>
+{each site}<li><a href="{url}">{text}</a></li>
+{/each}</ul>
+</main>
+
+<footer>
+<p>{footer}</p>
+</footer>
+
+</body>
+</html>

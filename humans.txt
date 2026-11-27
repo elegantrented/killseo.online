@@ -1,5 +1,0 @@
-/* SITE */
-Site: Kill SEO
-URL: https://killseo.online/
-Last update: 2026/11/27
-Standards: HTML5

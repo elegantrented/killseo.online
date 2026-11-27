@@ -1,0 +1,11 @@
+# Your websites, one per line. Lines starting with # are ignored.
+#
+#   example.com
+#   https://example.com/some-page
+#   https://example.com | Text people click on
+#
+# Each line fills in every {each site} block in the templates:
+# the link on the page, a dns-prefetch row, and two rows in the
+# Google structured data. All links are follow links.
+
+http://www.leaseend.com | www.leaseend.com

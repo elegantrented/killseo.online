@@ -1,10 +1,10 @@
 {
-  "name": "Kill SEO",
-  "short_name": "Kill SEO",
+  "name": "{site_name}",
+  "short_name": "{site_name}",
   "start_url": "/",
   "display": "browser",
   "background_color": "#ffffff",
-  "theme_color": "#ffffff",
+  "theme_color": "{theme_color}",
   "icons": [
     { "src": "/apple-touch-icon.png", "sizes": "180x180", "type": "image/png" },
     { "src": "/favicon.svg", "sizes": "any", "type": "image/svg+xml" }
