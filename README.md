@@ -43,9 +43,9 @@ Article text. Blank line between paragraphs.
 **bold** and [link text](https://example.com)
 ```
 
-`site:` must match a site in sites.txt; that site's page links to the post and the post links back. Write each post by hand about a real topic — copy-paste posts with only the name changed are what gets a site ignored by Google.
+`site:` must match a site in sites.txt; that site's page links to the post and the post links back.
 
-**Automatic posts:** when `sites.txt` changes, the GitHub Action `.github/workflows/auto-posts.yml` runs `write_posts.py`, which writes a post for every site that doesn't have one yet (up to 5 per run), based on that site's homepage, then commits it to `posts/`. It needs the repository secret `ANTHROPIC_API_KEY`. Read new posts after they appear — edit or delete any you don't like. You can also run it by hand from the Actions tab ("Run workflow").
+**Automatic posts (no AI):** every site in sites.txt that has *no* file in `posts/` automatically gets a post filled in from the templates in `templates/auto-posts/` — add a site and its post appears on the next publish. Sites rotate through the templates (1st site → template 1, 2nd → template 2, …), so add more `.md` files there for more variety. The templates use the same tags as site pages (`{text}`, `{domain}`, `{url}`, `{about}`, `{page_url}`, `{each anchor}…{/each anchor}`, `{if anchors}…{/if}`) plus `title:`, `description:` and `slug:` header lines. To replace an automatic post with your own, add a file to `posts/` for that site — the automatic one disappears. Write each post by hand about a real topic — copy-paste posts with only the name changed are what gets a site ignored by Google.
 
 **`settings.txt`** — the page-wide values (title, description, keywords, heading, intro text, footer, verification codes…), as `name: value`.
 

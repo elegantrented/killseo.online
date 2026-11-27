@@ -14,7 +14,9 @@ Per-site tags: {url} {host} {domain} {text} {about} {review} {slug} {page_url} {
 Settings may use per-site tags too (e.g. "paid_text: Paid by {text}"); each site gets its own version.
 
 Blog: each file in posts/ (header lines, a line with ---, then the article) becomes
-public/blog/<file name>/index.html via templates/post.html. Tags there: {post_title}
+public/blog/<file name>/index.html via templates/post.html. Every site WITHOUT a
+file in posts/ gets a post filled in from templates/auto-posts/*.md instead
+(sites rotate through those templates; all site tags and {each anchor} work there). Tags there: {post_title}
 {post_description} {post_date} {post_url} {post_slug} {post_body}, plus the tags of
 the site named on its `site:` line. {each post} ... {/each post} lists all posts.
 
@@ -133,6 +135,17 @@ def fill(text, values, esc, where):
     return TAG.sub(sub, text)
 
 
+INNER_IF = re.compile(r"\{if ([a-z_][a-z0-9_]*)\}((?:(?!\{if ).)*?)\{/if\}", re.S)
+
+
+def apply_ifs(text, values):
+    """Keep {if name}...{/if} only when `name` is set; innermost first, so they can nest."""
+    while True:
+        text, n = INNER_IF.subn(lambda m: m.group(2) if values.get(m.group(1)) else "", text)
+        if not n:
+            return text
+
+
 def render(text, settings, sites, esc, where, current=None):
     count = len(sites)
     page = {**settings, "count": count, **(current or {})}
@@ -157,12 +170,7 @@ def render(text, settings, sites, esc, where, current=None):
     text = re.sub(r"\{each post\}(.*?)\{/each post\}", each_post, text, flags=re.S)
     text = re.sub(r"\{each (sites?|other)\}(.*?)\{/each\}", each, text, flags=re.S)
     text = expand_anchors(text, current or {}, page, esc, where)
-    # innermost {if} first, so {if} blocks can be nested
-    inner_if = re.compile(r"\{if ([a-z_][a-z0-9_]*)\}((?:(?!\{if ).)*?)\{/if\}", re.S)
-    while True:
-        text, n = inner_if.subn(lambda m: m.group(2) if page.get(m.group(1)) else "", text)
-        if not n:
-            break
+    text = apply_ifs(text, page)
     return fill(text, page, esc, where)
 
 
@@ -216,10 +224,59 @@ def markdown(src):
     return "\n\n".join(out)
 
 
-def load_posts(settings, sites):
-    folder = os.path.join(ROOT, "posts")
+def parse_post(raw, where):
+    head, sep, body = raw.partition("\n---\n")
+    if not sep:
+        die(f"{where}: needs header lines, then a line with only ---, then the article")
+    meta = {}
+    for line in head.splitlines():
+        if line.strip() and not line.startswith("#"):
+            k, _, v = line.partition(":")
+            meta[k.strip().lower()] = v.strip()
+    return meta, body
+
+
+def auto_posts(settings, sites, taken):
+    """A post for every site that has no hand-written one, filled in from
+    templates/auto-posts/*.md. Sites rotate through the templates in order."""
+    folder = os.path.join(ROOT, "templates", "auto-posts")
     if not os.path.isdir(folder):
         return []
+    templates = [(n, open(os.path.join(folder, n), encoding="utf-8").read())
+                 for n in sorted(os.listdir(folder)) if n.endswith(".md")]
+    if not templates:
+        return []
+    posts = []
+    for i, site in enumerate(sites):
+        if site.get("post_url"):
+            continue
+        name, raw = templates[i % len(templates)]
+        where = f"templates/auto-posts/{name}"
+        head, sep, rest = raw.partition("\n---\n")  # drop # comment lines in the header
+        raw = "\n".join(l for l in head.splitlines() if not l.startswith("#")) + sep + rest
+        values = {**settings, **site, "n": i + 1, "count": len(sites)}
+        filled = fill(apply_ifs(expand_anchors(raw, site, values, lambda v: v, where), values),
+                      values, lambda v: v, where)
+        meta, body = parse_post(filled, where)
+        for k in ("title", "description", "slug"):
+            if not meta.get(k):
+                die(f"{where}: missing `{k}:` line")
+        slug = re.sub(r"[^a-z0-9]+", "-", meta["slug"].lower()).strip("-")
+        if slug in taken:
+            slug = f"{slug}-{i + 1}"
+        taken.add(slug)
+        post = {"post_title": meta["title"], "post_description": meta["description"],
+                "post_date": meta.get("date") or settings.get("published") or settings["today"],
+                "post_slug": slug, "post_url": f"{settings['site_url']}blog/{slug}/",
+                "post_body": markdown(body), "_site": site}
+        site["post_url"], site["post_title"] = post["post_url"], post["post_title"]
+        posts.append(post)
+    return posts
+
+
+def load_posts(settings, sites):
+    folder = os.path.join(ROOT, "posts")
+    os.makedirs(folder, exist_ok=True)
     by_url = {s["url"].rstrip("/").lower(): s for s in sites}
     by_domain = {s["domain"]: s for s in sites}
     posts = []
@@ -228,14 +285,7 @@ def load_posts(settings, sites):
             continue
         where = f"posts/{name}"
         raw = open(os.path.join(folder, name), encoding="utf-8").read()
-        head, sep, body = raw.partition("\n---\n")
-        if not sep:
-            die(f"{where}: needs header lines, then a line with only ---, then the article")
-        meta = {}
-        for line in head.splitlines():
-            if line.strip() and not line.startswith("#"):
-                k, _, v = line.partition(":")
-                meta[k.strip().lower()] = v.strip()
+        meta, body = parse_post(raw, where)
         for k in ("title", "description", "site"):
             if not meta.get(k):
                 die(f"{where}: missing `{k}:` line")
@@ -251,7 +301,8 @@ def load_posts(settings, sites):
         posts.append(post)
         site.setdefault("post_url", post["post_url"])
         site.setdefault("post_title", post["post_title"])
-    posts.sort(key=lambda p: p["post_date"], reverse=True)
+    posts += auto_posts(settings, sites, {p["post_slug"] for p in posts})
+    posts.sort(key=lambda p: (p["post_date"], p["post_title"]), reverse=True)
     for s in sites:
         s.setdefault("post_url", "")
         s.setdefault("post_title", "")
@@ -266,7 +317,8 @@ def main():
     shutil.rmtree(OUT, ignore_errors=True)
     shutil.copytree(os.path.join(ROOT, "static"), OUT)
     for name in sorted(os.listdir(os.path.join(ROOT, "templates"))):
-        if name.startswith(".") or name in (SITE_PAGE, POST_PAGE):
+        if name.startswith(".") or name in (SITE_PAGE, POST_PAGE) \
+                or os.path.isdir(os.path.join(ROOT, "templates", name)):
             continue
         target = os.path.join(OUT, name)
         if name == "blog.html":  # served at /blog/
