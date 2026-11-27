@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://killseo.online/sitemap.xml
