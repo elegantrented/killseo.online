@@ -18,6 +18,8 @@ author: Kill SEO
 heading: Kill SEO
 intro: Search engine optimization, straight to the point.
 footer: © {year} {site_name}
+contact_text: To be added to our site for more SEO contact us at
+contact_email: hello@killseo.online
 published: 2026-11-27
 language: en-US
 og_locale: en_US

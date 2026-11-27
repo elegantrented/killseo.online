@@ -65,7 +65,9 @@
       "@type": "Organization",
       "@id": "{site_url}#organization",
       "name": "{site_name}",
-      "url": "{site_url}",
+      "url": "{site_url}",{if contact_email}
+      "email": "{contact_email}",
+      "contactPoint": { "@type": "ContactPoint", "contactType": "customer support", "email": "{contact_email}" },{/if}
       "logo": {
         "@type": "ImageObject",
         "url": "{site_url}apple-touch-icon.png",
@@ -127,7 +129,8 @@
 </main>
 
 <footer>
-<p>{footer}</p>
+{if contact_email}<p>{contact_text} <a href="mailto:{contact_email}">{contact_email}</a></p>
+{/if}<p>{footer}</p>
 </footer>
 
 </body>
