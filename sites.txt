@@ -4,6 +4,11 @@
 #   https://example.com/some-page
 #   https://example.com | Text people click on
 #   https://example.com | Text people click on | A sentence or two about this site
+#   https://example.com | Text | About text | https://link-to-leave-them-a-review
+#
+# Parts after the address are optional, but keep their order (leave a part
+# empty with "| |" to skip it). Without a review link, settings.txt's
+# review_url is used (Trustpilot for that domain).
 #
 # Each line gets its own page at killseo.online/<name>/ (built from
 # templates/site-page.html), a link on the homepage, a sitemap entry and

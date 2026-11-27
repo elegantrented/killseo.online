@@ -8,7 +8,8 @@ Template syntax
   {each site} ... {/each}   repeated once per line of sites.txt
   {if name} ... {/if}       kept only when setting `name` is not empty
   {each other} ... {/each}  like {each site} but skips the current site (site pages only)
-Per-site tags: {url} {host} {domain} {text} {about} {slug} {page_url} {n} {comma}
+Per-site tags: {url} {host} {domain} {text} {about} {review} {slug} {page_url} {n} {comma}
+Settings may use per-site tags too (e.g. "paid_text: Paid by {text}"); each site gets its own version.
 
 templates/site-page.html is rendered once per site into public/<slug>/index.html,
 with that site's tags available everywhere on the page.
@@ -19,6 +20,7 @@ from urllib.parse import urlparse
 ROOT = os.path.dirname(os.path.abspath(__file__))
 OUT = os.path.join(ROOT, "public")
 TAG = re.compile(r"\{([a-z_][a-z0-9_]*)\}")
+PER_SITE = {"url", "host", "domain", "text", "about", "slug", "page_url", "review"}
 
 
 def die(msg):
@@ -48,8 +50,9 @@ def load_settings():
     today = datetime.date.today()
     s.update(site_url=f"https://{s['domain']}/", today=today.isoformat(), year=str(today.year))
     for _ in range(3):  # let settings reference other settings, e.g. {year} {site_name}
-        s = {k: v if k == "site_about" else TAG.sub(lambda m: s.get(m.group(1), m.group(0)), v)
-             for k, v in s.items()}  # site_about is filled per site later
+        # per-site tags like {text} or {domain} are left in place and filled for each site later
+        s = {k: TAG.sub(lambda m: m.group(0) if m.group(1) in PER_SITE else s.get(m.group(1), m.group(0)), v)
+             for k, v in s.items()}
     return s
 
 
@@ -61,8 +64,8 @@ def slugify(host, path):
 def load_sites(settings):
     sites, seen = [], {}
     for n, line in lines("sites.txt"):
-        url, _, rest = (p.strip() for p in line.partition("|"))
-        text, _, about = (p.strip() for p in rest.partition("|"))
+        parts = [p.strip() for p in line.split("|")] + ["", "", ""]
+        url, text, about, review = parts[:4]
         if not re.match(r"^https?://", url, re.I):
             url = "https://" + url
         parsed = urlparse(url)
@@ -76,8 +79,13 @@ def load_sites(settings):
             slug = f"{slug}-{seen[slug]}"
         site = {"url": url, "host": host, "domain": domain, "text": text or domain,
                 "slug": slug, "page_url": f"{settings['site_url']}{slug}/"}
-        default = settings.get("site_about", "")
-        site["about"] = about or TAG.sub(lambda m: site.get(m.group(1), settings.get(m.group(1), m.group(0))), default)
+        fill_in = lambda v: TAG.sub(lambda m: site.get(m.group(1), settings.get(m.group(1), m.group(0))), v)
+        site["about"] = about or fill_in(settings.get("site_about", ""))
+        site["review"] = review or fill_in(settings.get("review_url", ""))
+        # settings that use per-site tags (e.g. "Paid by {text}") get this site's version
+        for k, v in settings.items():
+            if k not in site and any(t in PER_SITE for t in TAG.findall(v)):
+                site[k] = fill_in(v)
         sites.append(site)
     if not sites:
         die("sites.txt has no websites")
