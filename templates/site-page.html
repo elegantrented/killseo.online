@@ -88,7 +88,10 @@
 
 {if paid_text}<p><strong>{paid_text}</strong></p>
 {/if}<p>Website: <a href="{url}"{if link_rel} rel="{link_rel}"{/if}>{text}</a></p>
-{if review}<p><a href="{review}" rel="nofollow">{review_text}</a></p>
+{if anchors}<ul>
+{each anchor}<li><a href="{url}"{if link_rel} rel="{link_rel}"{/if}>{anchor}</a></li>
+{/each anchor}</ul>
+{/if}{if review}<p><a href="{review}" rel="nofollow">{review_text}</a></p>
 {/if}
 
 <h2>More sites</h2>

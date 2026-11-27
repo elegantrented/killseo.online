@@ -8,6 +8,8 @@ Template syntax
   {each site} ... {/each}   repeated once per line of sites.txt
   {if name} ... {/if}       kept only when setting `name` is not empty
   {each other} ... {/each}  like {each site} but skips the current site (site pages only)
+  {each anchor} ... {/each anchor}  repeated once per anchor phrase of a site (5th part of
+                            its sites.txt line); use inside {each site}/{each other} or on site pages
 Per-site tags: {url} {host} {domain} {text} {about} {review} {slug} {page_url} {n} {comma}
 Settings may use per-site tags too (e.g. "paid_text: Paid by {text}"); each site gets its own version.
 
@@ -20,7 +22,13 @@ from urllib.parse import urlparse
 ROOT = os.path.dirname(os.path.abspath(__file__))
 OUT = os.path.join(ROOT, "public")
 TAG = re.compile(r"\{([a-z_][a-z0-9_]*)\}")
-PER_SITE = {"url", "host", "domain", "text", "about", "slug", "page_url", "review"}
+PER_SITE = {"url", "host", "domain", "text", "about", "slug", "page_url", "review", "anchors"}
+ANCHOR_BLOCK = re.compile(r"\{each anchor\}(.*?)\{/each anchor\}", re.S)
+
+
+def expand_anchors(text, site, values, esc, where):
+    return ANCHOR_BLOCK.sub(lambda m: "".join(fill(m.group(1), {**values, "anchor": a}, esc, where)
+                                              for a in site.get("_anchors", [])), text)
 
 
 def die(msg):
@@ -64,8 +72,8 @@ def slugify(host, path):
 def load_sites(settings):
     sites, seen = [], {}
     for n, line in lines("sites.txt"):
-        parts = [p.strip() for p in line.split("|")] + ["", "", ""]
-        url, text, about, review = parts[:4]
+        parts = [p.strip() for p in line.split("|")] + ["", "", "", ""]
+        url, text, about, review, anchors = parts[:5]
         if not re.match(r"^https?://", url, re.I):
             url = "https://" + url
         parsed = urlparse(url)
@@ -78,7 +86,9 @@ def load_sites(settings):
         if seen[slug] > 1:
             slug = f"{slug}-{seen[slug]}"
         site = {"url": url, "host": host, "domain": domain, "text": text or domain,
-                "slug": slug, "page_url": f"{settings['site_url']}{slug}/"}
+                "slug": slug, "page_url": f"{settings['site_url']}{slug}/",
+                "_anchors": [a.strip() for a in anchors.split(",") if a.strip()]}
+        site["anchors"] = ", ".join(site["_anchors"])
         fill_in = lambda v: TAG.sub(lambda m: site.get(m.group(1), settings.get(m.group(1), m.group(0))), v)
         site["about"] = about or fill_in(settings.get("site_about", ""))
         site["review"] = review or fill_in(settings.get("review_url", ""))
@@ -126,12 +136,17 @@ def render(text, settings, sites, esc, where, current=None):
         for i, site in enumerate(group, 1):
             vals = {**settings, **site, "n": i, "count": count,
                     "comma": "," if i < len(group) else ""}
-            out.append(fill(m.group(2), vals, esc, where))
+            out.append(fill(expand_anchors(m.group(2), site, vals, esc, where), vals, esc, where))
         return "".join(out)
 
     text = re.sub(r"\{each (sites?|other)\}(.*?)\{/each\}", each, text, flags=re.S)
-    text = re.sub(r"\{if ([a-z_][a-z0-9_]*)\}(.*?)\{/if\}",
-                  lambda m: m.group(2) if page.get(m.group(1)) else "", text, flags=re.S)
+    text = expand_anchors(text, current or {}, page, esc, where)
+    # innermost {if} first, so {if} blocks can be nested
+    inner_if = re.compile(r"\{if ([a-z_][a-z0-9_]*)\}((?:(?!\{if ).)*?)\{/if\}", re.S)
+    while True:
+        text, n = inner_if.subn(lambda m: m.group(2) if page.get(m.group(1)) else "", text)
+        if not n:
+            break
     return fill(text, page, esc, where)
 
 

@@ -20,6 +20,8 @@ Every site's page says **Paid by {text}** (`paid_text` in settings.txt) and has 
 
 Each line gets **its own page** at `killseo.online/<name>/` (e.g. `example.com` → `/example-com/`), built from `templates/site-page.html`, plus a link on the homepage, a sitemap entry and rows in the Google structured data. Sites without a description use `site_about` from settings.txt — write unique ones, since near-identical pages rank poorly.
 
+**Keyword links (5th part of a line):** `https://example.com | Example | | | best business loans, cheap lease buyout` — each comma-separated phrase becomes its own link to that site, on the homepage and the site's page. Leave the 3rd/4th parts empty with `| |` if you don't have them. Keep phrases varied and honest — identical money phrases across many sites is the classic link-scheme pattern.
+
 **`settings.txt`** — the page-wide values (title, description, keywords, heading, intro text, footer, verification codes…), as `name: value`.
 
 ## How the tags work
@@ -35,7 +37,8 @@ Files in `templates/` are the pages, with `{tags}` where values go:
 | `{each site}` … `{/each}` | repeated once per line of sites.txt |
 | `{each other}` … `{/each}` | same, skipping the current site (site pages only) |
 | `{url}` `{host}` `{domain}` `{text}` `{about}` `{review}` `{slug}` `{page_url}` `{n}` `{comma}` | per-site values, inside `{each …}` and anywhere in `site-page.html` |
-| `{if name}` … `{/if}` | kept only if that setting isn't empty |
+| `{each anchor}` … `{/each anchor}` | repeated per keyword phrase of a site; `{anchor}` is the phrase |
+| `{if name}` … `{/if}` | kept only if that setting isn't empty (can be nested) |
 
 Add a new tag by adding `name: value` to settings.txt and `{name}` to a template. A setting can use per-site tags (e.g. `paid_text: Paid by {text}`), and each site gets its own version. Images and icons live in `static/` and are copied as-is.
 

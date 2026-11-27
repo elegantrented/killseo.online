@@ -5,6 +5,10 @@
 #   https://example.com | Text people click on
 #   https://example.com | Text people click on | A sentence or two about this site
 #   https://example.com | Text | About text | https://link-to-leave-them-a-review
+#   https://example.com | Text | About | Review link | anchor one, anchor two, anchor three
+#
+# The 5th part is a comma-separated list of link phrases. Each phrase becomes
+# its own link to that site, on the homepage and on the site's own page.
 #
 # Parts after the address are optional, but keep their order (leave a part
 # empty with "| |" to skip it). Without a review link, settings.txt's
@@ -16,18 +20,18 @@
 # The description (third part) becomes that page's text and Google snippet;
 # write a different one for each site, or the settings.txt default is used.
 
-http://www.leaseend.com | www.leaseend.com
-https://leasematurity.com | www.leasematurity.com
-https://www.driveway.com | www.driveway.com
-https://www.fidelity-funding.com | www.fidelity-funding.com
-https://quitalease.com | quitalease.com
-https://www.refijet.com | www.refijet.com
-https://businessloans.com | businessloans.com
-http://ondeck.com | ondeck.com
-https://www.lendio.com | www.lendio.com
+http://www.leaseend.com | www.leaseend.com |  |  | lease buyout loan, cheap lease buyout, car lease buyout financing
+https://leasematurity.com | www.leasematurity.com |  |  | lease maturity buyout, end of lease buyout, lease payoff loan
+https://www.driveway.com | www.driveway.com |  |  | buy a used car online, sell my car online, used cars for sale
+https://www.fidelity-funding.com | www.fidelity-funding.com |  |  | fast business funding, merchant cash advance, working capital loans
+https://quitalease.com | quitalease.com |  |  | get out of a car lease, car lease transfer, lease takeover
+https://www.refijet.com | www.refijet.com |  |  | auto loan refinance, refinance my car loan, lower car payment
+https://businessloans.com | businessloans.com |  |  | best business loans, small business loans, compare business loans
+http://ondeck.com | ondeck.com |  |  | small business loans online, business line of credit, short term business loans
+https://www.lendio.com | www.lendio.com |  |  | business loan marketplace, SBA loans, compare small business lenders
 https://www.fuckyou.com | www.fuckoff.com
-https://www.nationalfunding.com | www.nationalfunding.com
-https://cardiff.co | cardiff.co
-https://www.sofi.com | www.sofi.com
-https://www.forafinancial.com | www.forafinancial.com
-https://www.eautolease.com | www.eautolease.com
+https://www.nationalfunding.com | www.nationalfunding.com |  |  | equipment financing, small business working capital, business loans for bad credit
+https://cardiff.co | cardiff.co |  |  | small business financing, business cash advance, working capital funding
+https://www.sofi.com | www.sofi.com |  |  | personal loans, student loan refinancing, best personal loan rates
+https://www.forafinancial.com | www.forafinancial.com |  |  | revenue based financing, small business funding, business cash advance
+https://www.eautolease.com | www.eautolease.com |  |  | cheap car lease deals, best car lease deals, new car leasing

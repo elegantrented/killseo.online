@@ -124,7 +124,7 @@
 <p>{intro}</p>
 
 <ul>
-{each site}<li><a href="{url}"{if link_rel} rel="{link_rel}"{/if}>{text}</a> &mdash; <a href="/{slug}/">about {domain}</a>{if paid_text} ({paid_text}){/if}</li>
+{each site}<li><a href="{url}"{if link_rel} rel="{link_rel}"{/if}>{text}</a> &mdash; <a href="/{slug}/">about {domain}</a>{if paid_text} ({paid_text}){/if}{each anchor} &middot; <a href="{url}"{if link_rel} rel="{link_rel}"{/if}>{anchor}</a>{/each anchor}</li>
 {/each}</ul>
 </main>
 
