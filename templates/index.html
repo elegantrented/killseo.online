@@ -107,7 +107,7 @@
       "name": "{heading}",
       "numberOfItems": {count},
       "itemListElement": [{each site}
-        { "@type": "ListItem", "position": {n}, "name": "{text}", "url": "{url}" }{comma}{/each}
+        { "@type": "ListItem", "position": {n}, "name": "{text}", "url": "{page_url}" }{comma}{/each}
       ]
     }
   ]
@@ -124,7 +124,7 @@
 <p>{intro}</p>
 
 <ul>
-{each site}<li><a href="{url}">{text}</a></li>
+{each site}<li><a href="{url}">{text}</a> &mdash; <a href="/{slug}/">about {domain}</a></li>
 {/each}</ul>
 </main>
 

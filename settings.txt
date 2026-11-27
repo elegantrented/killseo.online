@@ -6,8 +6,8 @@
 # Built-in tags you don't set here:
 #   {site_url}  https://<domain>/        {today}  build date (YYYY-MM-DD)
 #   {year}      build year               {count}  number of lines in sites.txt
-# Per-site tags (inside {each site} ... {/each} blocks in templates):
-#   {url} {host} {domain} {text} {n} {comma}
+# Per-site tags (inside {each site} / {each other} blocks, and anywhere in site-page.html):
+#   {url} {host} {domain} {text} {about} {slug} {page_url} {n} {comma}
 
 domain: killseo.online
 site_name: Kill SEO
@@ -20,6 +20,9 @@ intro: Search engine optimization, straight to the point.
 footer: © {year} {site_name}
 contact_text: To be added to our site for more SEO contact us at
 contact_email: hello@killseo.online
+# Description used on a site's own page when its line in sites.txt has none.
+# Can use per-site tags: {text} {domain} {url}
+site_about: {text} ({domain}) is featured on {site_name}. Visit the official website at {domain}.
 published: 2026-11-27
 language: en-US
 og_locale: en_US

@@ -7,7 +7,11 @@ Template syntax
   {name}                    value from settings.txt, or a built-in tag
   {each site} ... {/each}   repeated once per line of sites.txt
   {if name} ... {/if}       kept only when setting `name` is not empty
-Per-site tags (inside {each site}): {url} {host} {domain} {text} {n} {comma}
+  {each other} ... {/each}  like {each site} but skips the current site (site pages only)
+Per-site tags: {url} {host} {domain} {text} {about} {slug} {page_url} {n} {comma}
+
+templates/site-page.html is rendered once per site into public/<slug>/index.html,
+with that site's tags available everywhere on the page.
 """
 import datetime, html, json, os, re, shutil, sys
 from urllib.parse import urlparse
@@ -44,21 +48,37 @@ def load_settings():
     today = datetime.date.today()
     s.update(site_url=f"https://{s['domain']}/", today=today.isoformat(), year=str(today.year))
     for _ in range(3):  # let settings reference other settings, e.g. {year} {site_name}
-        s = {k: TAG.sub(lambda m: s.get(m.group(1), m.group(0)), v) for k, v in s.items()}
+        s = {k: v if k == "site_about" else TAG.sub(lambda m: s.get(m.group(1), m.group(0)), v)
+             for k, v in s.items()}  # site_about is filled per site later
     return s
 
 
-def load_sites():
-    sites = []
+def slugify(host, path):
+    base = (host[4:] if host.startswith("www.") else host) + ("-" + path if path.strip("/") else "")
+    return re.sub(r"[^a-z0-9]+", "-", base.lower()).strip("-")
+
+
+def load_sites(settings):
+    sites, seen = [], {}
     for n, line in lines("sites.txt"):
-        url, _, text = (p.strip() for p in line.partition("|"))
+        url, _, rest = (p.strip() for p in line.partition("|"))
+        text, _, about = (p.strip() for p in rest.partition("|"))
         if not re.match(r"^https?://", url, re.I):
             url = "https://" + url
-        host = urlparse(url).hostname or ""
+        parsed = urlparse(url)
+        host = (parsed.hostname or "").lower()
         if "." not in host or " " in url:
             die(f"sites.txt line {n}: not a valid website: {line}")
         domain = host[4:] if host.startswith("www.") else host
-        sites.append({"url": url, "host": host, "domain": domain, "text": text or domain})
+        slug = slugify(host, parsed.path)
+        seen[slug] = seen.get(slug, 0) + 1
+        if seen[slug] > 1:
+            slug = f"{slug}-{seen[slug]}"
+        site = {"url": url, "host": host, "domain": domain, "text": text or domain,
+                "slug": slug, "page_url": f"{settings['site_url']}{slug}/"}
+        default = settings.get("site_about", "")
+        site["about"] = about or TAG.sub(lambda m: site.get(m.group(1), settings.get(m.group(1), m.group(0))), default)
+        sites.append(site)
     if not sites:
         die("sites.txt has no websites")
     return sites
@@ -88,52 +108,66 @@ def fill(text, values, esc, where):
     return TAG.sub(sub, text)
 
 
-def render(text, settings, sites, esc, where):
+def render(text, settings, sites, esc, where, current=None):
     count = len(sites)
+    page = {**settings, "count": count, **(current or {})}
 
     def each(m):
+        group = [x for x in sites if m.group(1) != "other" or x is not current]
         out = []
-        for i, site in enumerate(sites, 1):
-            vals = {**settings, **site, "n": i, "count": count, "comma": "," if i < count else ""}
-            out.append(fill(m.group(1), vals, esc, where))
+        for i, site in enumerate(group, 1):
+            vals = {**settings, **site, "n": i, "count": count,
+                    "comma": "," if i < len(group) else ""}
+            out.append(fill(m.group(2), vals, esc, where))
         return "".join(out)
 
-    text = re.sub(r"\{each sites?\}(.*?)\{/each\}", each, text, flags=re.S)
+    text = re.sub(r"\{each (sites?|other)\}(.*?)\{/each\}", each, text, flags=re.S)
     text = re.sub(r"\{if ([a-z_][a-z0-9_]*)\}(.*?)\{/if\}",
-                  lambda m: m.group(2) if settings.get(m.group(1)) else "", text, flags=re.S)
-    return fill(text, {**settings, "count": count}, esc, where)
+                  lambda m: m.group(2) if page.get(m.group(1)) else "", text, flags=re.S)
+    return fill(text, page, esc, where)
 
 
-def render_file(name, settings, sites):
+def render_file(name, settings, sites, current=None):
     src = open(os.path.join(ROOT, "templates", name), encoding="utf-8").read()
     esc = escaper(name)
-    if esc is not None and name.endswith((".html", ".htm")):
+    where = f"templates/{name}"
+    if name.endswith((".html", ".htm")):
         # JSON-LD blocks need JSON escaping, not HTML escaping
         parts = re.split(r"(<script type=\"application/ld\+json\">.*?</script>)", src, flags=re.S)
-        out = []
-        for i, part in enumerate(parts):
-            is_json = i % 2 == 1
-            out.append(render(part, settings, sites, json_text if is_json else esc, f"templates/{name}"))
-        result = "".join(out)
+        result = "".join(render(part, settings, sites, json_text if i % 2 else esc, where, current)
+                         for i, part in enumerate(parts))
         for block in re.findall(r"<script type=\"application/ld\+json\">(.*?)</script>", result, flags=re.S):
             try:
                 json.loads(block)
             except ValueError as e:
-                die(f"templates/{name}: structured data is not valid JSON after filling tags ({e})")
+                die(f"{where}: structured data is not valid JSON after filling tags ({e})")
         return result
-    return render(src, settings, sites, esc, f"templates/{name}")
+    return render(src, settings, sites, esc, where, current)
+
+
+SITE_PAGE = "site-page.html"
 
 
 def main():
-    settings, sites = load_settings(), load_sites()
+    settings = load_settings()
+    sites = load_sites(settings)
     shutil.rmtree(OUT, ignore_errors=True)
     shutil.copytree(os.path.join(ROOT, "static"), OUT)
     for name in sorted(os.listdir(os.path.join(ROOT, "templates"))):
-        if name.startswith("."):
+        if name.startswith(".") or name == SITE_PAGE:
             continue
         with open(os.path.join(OUT, name), "w", encoding="utf-8") as f:
             f.write(render_file(name, settings, sites))
-    print(f"built {settings['site_url']} with {len(sites)} site(s) into public/")
+    pages = 0
+    if os.path.exists(os.path.join(ROOT, "templates", SITE_PAGE)):
+        for site in sites:
+            if os.path.exists(os.path.join(OUT, site["slug"])):
+                die(f"sites.txt: page name /{site['slug']}/ clashes with an existing file")
+            os.makedirs(os.path.join(OUT, site["slug"]))
+            with open(os.path.join(OUT, site["slug"], "index.html"), "w", encoding="utf-8") as f:
+                f.write(render_file(SITE_PAGE, settings, sites, site))
+            pages += 1
+    print(f"built {settings['site_url']} with {len(sites)} site(s) and {pages} site page(s) into public/")
 
 
 if __name__ == "__main__":

@@ -3,10 +3,13 @@
 #   example.com
 #   https://example.com/some-page
 #   https://example.com | Text people click on
+#   https://example.com | Text people click on | A sentence or two about this site
 #
-# Each line fills in every {each site} block in the templates:
-# the link on the page, a dns-prefetch row, and two rows in the
-# Google structured data. All links are follow links.
+# Each line gets its own page at killseo.online/<name>/ (built from
+# templates/site-page.html), a link on the homepage, a sitemap entry and
+# rows in the Google structured data. All links are follow links.
+# The description (third part) becomes that page's text and Google snippet;
+# write a different one for each site, or the settings.txt default is used.
 
 http://www.leaseend.com | www.leaseend.com
 https://leasematurity.com | www.leasematurity.com
