@@ -17,6 +17,5 @@ node_modules
 .assetsignore
 wrangler.jsonc
 README.md
-deploy.sh
 links.txt
 build-links.py
