@@ -1,0 +1,16 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "killseo-online",
+  "account_id": "5d6b005a61bf789cd287d31cc50d0c80",
+  "compatibility_date": "2026-11-27",
+  "observability": { "enabled": true },
+  "routes": [
+    { "pattern": "killseo.online", "custom_domain": true },
+    { "pattern": "www.killseo.online", "custom_domain": true }
+  ],
+  "assets": {
+    "directory": ".",
+    "not_found_handling": "404-page",
+    "html_handling": "auto-trailing-slash"
+  }
+}
