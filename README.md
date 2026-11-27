@@ -13,4 +13,4 @@ https://example.com | Text people click on
 All links are normal follow links. The list on the page is rebuilt from this file on every publish, so don't edit the list inside `index.html` directly.
 
 ## Change anything else
-Edit **`index.html`** on GitHub and commit. Live in about a minute.
+Edit **`index.html`** on GitHub and commit. Live in about a minute after you commit.
