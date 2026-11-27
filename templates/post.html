@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="{language}" dir="ltr" prefix="og: https://ogp.me/ns#">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<title>{post_title} | {site_name}</title>
+<meta name="description" content="{post_description}">
+<meta name="author" content="{author}">
+
+<meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1">
+<meta name="googlebot" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1">
+<link rel="canonical" href="{post_url}">
+<link rel="alternate" hreflang="{language}" href="{post_url}">
+<link rel="alternate" hreflang="x-default" href="{post_url}">
+
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="{site_name}">
+<meta property="og:locale" content="{og_locale}">
+<meta property="og:url" content="{post_url}">
+<meta property="og:title" content="{post_title}">
+<meta property="og:description" content="{post_description}">
+<meta property="og:image" content="{site_url}og-image.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="{site_name}">
+<meta property="article:published_time" content="{post_date}">
+<meta property="article:modified_time" content="{today}">
+
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="{post_title}">
+<meta name="twitter:description" content="{post_description}">
+<meta name="twitter:image" content="{site_url}og-image.png">
+{if twitter}<meta name="twitter:site" content="{twitter}">
+{/if}
+<link rel="icon" href="/favicon.ico" sizes="32x32">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<link rel="manifest" href="/site.webmanifest">
+<meta name="theme-color" content="{theme_color}">
+<link rel="dns-prefetch" href="//{host}">
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "BlogPosting",
+      "@id": "{post_url}#article",
+      "headline": "{post_title}",
+      "description": "{post_description}",
+      "url": "{post_url}",
+      "mainEntityOfPage": "{post_url}",
+      "datePublished": "{post_date}",
+      "dateModified": "{today}",
+      "inLanguage": "{language}",
+      "image": "{site_url}og-image.png",
+      "author": { "@type": "Organization", "name": "{site_name}", "url": "{site_url}" },
+      "publisher": {
+        "@type": "Organization",
+        "name": "{site_name}",
+        "url": "{site_url}",
+        "logo": { "@type": "ImageObject", "url": "{site_url}apple-touch-icon.png" }
+      },
+      "mentions": { "@type": "WebSite", "name": "{text}", "url": "{url}" },
+      "isPartOf": { "@id": "{site_url}#website" }
+    },
+    {
+      "@type": "BreadcrumbList",
+      "itemListElement": [
+        { "@type": "ListItem", "position": 1, "name": "{site_name}", "item": "{site_url}" },
+        { "@type": "ListItem", "position": 2, "name": "Blog", "item": "{site_url}blog/" },
+        { "@type": "ListItem", "position": 3, "name": "{post_title}", "item": "{post_url}" }
+      ]
+    },
+    {
+      "@type": "WebSite",
+      "@id": "{site_url}#website",
+      "url": "{site_url}",
+      "name": "{site_name}"
+    }
+  ]
+}
+</script>
+</head>
+<body>
+
+<header>
+<p><a href="/">{site_name}</a> &rsaquo; <a href="/blog/">Blog</a></p>
+<h1>{post_title}</h1>
+<p><time datetime="{post_date}">{post_date}</time>{if paid_text} &middot; {paid_text}{/if}</p>
+</header>
+
+<main>
+<article>
+{post_body}
+</article>
+
+<p>Website: <a href="{url}"{if link_rel} rel="{link_rel}"{/if}>{text}</a> &middot; <a href="/{slug}/">About {domain} on {site_name}</a></p>
+
+<h2>More from the blog</h2>
+<ul>
+{each post}<li><a href="/blog/{post_slug}/">{post_title}</a></li>
+{/each post}</ul>
+</main>
+
+<footer>
+{if contact_email}<p>{contact_text} <a href="mailto:{contact_email}">{contact_email}</a></p>
+{/if}<p>{footer}</p>
+</footer>
+
+</body>
+</html>

@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="{language}" dir="ltr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<title>Blog | {site_name}</title>
+<meta name="description" content="Guides from {site_name} on lease buyouts, business funding, car buying and personal finance.">
+<meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1">
+<link rel="canonical" href="{site_url}blog/">
+
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="{site_name}">
+<meta property="og:url" content="{site_url}blog/">
+<meta property="og:title" content="Blog | {site_name}">
+<meta property="og:description" content="Guides from {site_name} on lease buyouts, business funding, car buying and personal finance.">
+<meta property="og:image" content="{site_url}og-image.png">
+<meta name="twitter:card" content="summary_large_image">
+
+<link rel="icon" href="/favicon.ico" sizes="32x32">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<link rel="manifest" href="/site.webmanifest">
+<meta name="theme-color" content="{theme_color}">
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Blog",
+  "@id": "{site_url}blog/#blog",
+  "url": "{site_url}blog/",
+  "name": "{site_name} Blog",
+  "publisher": { "@type": "Organization", "name": "{site_name}", "url": "{site_url}" },
+  "blogPost": [{each post}
+    { "@type": "BlogPosting", "headline": "{post_title}", "url": "{post_url}", "datePublished": "{post_date}" }{comma}{/each post}
+  ]
+}
+</script>
+</head>
+<body>
+
+<header>
+<p><a href="/">{site_name}</a> &rsaquo; Blog</p>
+<h1>{site_name} Blog</h1>
+</header>
+
+<main>
+<ul>
+{each post}<li><a href="/blog/{post_slug}/">{post_title}</a> &mdash; {post_description}</li>
+{/each post}</ul>
+</main>
+
+<footer>
+{if contact_email}<p>{contact_text} <a href="mailto:{contact_email}">{contact_email}</a></p>
+{/if}<p>{footer}</p>
+</footer>
+
+</body>
+</html>

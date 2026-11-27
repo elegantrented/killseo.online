@@ -94,7 +94,9 @@
 {/if}{if review}<p><a href="{review}" rel="nofollow">{review_text}</a></p>
 {/if}
 
-<h2>More sites</h2>
+{if post_url}<p>Read: <a href="{post_url}">{post_title}</a></p>
+
+{/if}<h2>More sites</h2>
 <ul>
 {each other}<li><a href="/{slug}/">{text}</a></li>
 {/each}</ul>

@@ -22,6 +22,29 @@ Each line gets **its own page** at `killseo.online/<name>/` (e.g. `example.com` 
 
 **Keyword links (5th part of a line):** `https://example.com | Example | | | best business loans, cheap lease buyout` — each comma-separated phrase becomes its own link to that site, on the homepage and the site's page. Leave the 3rd/4th parts empty with `| |` if you don't have them. Keep phrases varied and honest — identical money phrases across many sites is the classic link-scheme pattern.
 
+**`posts/`** — blog posts, one `.md` file each, published at `killseo.online/blog/<file name>/`:
+
+```
+title: Post title
+description: One-sentence summary for Google
+site: https://example.com
+date: 2026-11-27
+---
+Article text. Blank line between paragraphs.
+
+## A heading
+
+- bullet
+- bullet
+
+1. numbered
+2. numbered
+
+**bold** and [link text](https://example.com)
+```
+
+`site:` must match a site in sites.txt; that site's page links to the post and the post links back. Write each post by hand about a real topic — copy-paste posts with only the name changed are what gets a site ignored by Google.
+
 **`settings.txt`** — the page-wide values (title, description, keywords, heading, intro text, footer, verification codes…), as `name: value`.
 
 ## How the tags work
