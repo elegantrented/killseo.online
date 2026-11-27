@@ -29,7 +29,7 @@ site_about: {text} ({domain}) is featured on {site_name}. Visit the official web
 paid_text: Paid by {text}
 # rel value for links to listed sites. Google requires "sponsored" on paid links.
 # Leave empty for plain follow links (see README: this is what gets link sellers penalized).
-link_rel: sponsored
+link_rel:
 # Review link on every site's page. {domain} is that site's domain.
 # Override for one site with a 4th part in sites.txt.
 review_text: Leave {text} a review
