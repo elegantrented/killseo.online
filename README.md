@@ -45,6 +45,8 @@ Article text. Blank line between paragraphs.
 
 `site:` must match a site in sites.txt; that site's page links to the post and the post links back. Write each post by hand about a real topic — copy-paste posts with only the name changed are what gets a site ignored by Google.
 
+**Automatic posts:** when `sites.txt` changes, the GitHub Action `.github/workflows/auto-posts.yml` runs `write_posts.py`, which writes a post for every site that doesn't have one yet (up to 5 per run), based on that site's homepage, then commits it to `posts/`. It needs the repository secret `ANTHROPIC_API_KEY`. Read new posts after they appear — edit or delete any you don't like. You can also run it by hand from the Actions tab ("Run workflow").
+
 **`settings.txt`** — the page-wide values (title, description, keywords, heading, intro text, footer, verification codes…), as `name: value`.
 
 ## How the tags work
