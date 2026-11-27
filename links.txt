@@ -7,4 +7,4 @@
 # All links are normal follow links (they pass ranking credit).
 # Save this file, then run ./deploy.sh
 
-http://www.fastapi.online | www.fastapi.online
+http://www.leaseend.com | www.leaseend.com
